@@ -1,0 +1,576 @@
+!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NJZ Phoning x Locket</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Varela Round & Inter for Y2K Cute Vibe -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Varela Round"', '"Fredoka"', 'sans-serif'],
+                        fredoka: ['"Fredoka"', 'sans-serif'],
+                    },
+                    colors: {
+                        njzBlue: '#4AA8FF',
+                        njzPink: '#FF9ECF',
+                        njzYellow: '#FFEE55',
+                        njzPurple: '#D8B4FE',
+                        njzBg: '#F3F4F6',
+                        njzCard: '#FFFFFF',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Varela Round', sans-serif;
+            background-color: #1a1625;
+            color: #2D3748;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        .phoning-bubble-shadow {
+            box-shadow: 0 8px 0 rgba(74, 168, 255, 0.25);
+        }
+        .bunny-float {
+            animation: floatBunny 3s ease-in-out infinite;
+        }
+        @keyframes floatBunny {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(3deg); }
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="h-full flex justify-center items-center bg-[#120F1D] overflow-hidden">
+
+    <!-- Phoning Phone Shell Container -->
+    <div id="app-container" class="w-full h-full sm:max-w-md sm:h-[844px] sm:rounded-[48px] sm:border-[10px] sm:border-[#FF9ECF] bg-[#FBF9FF] flex flex-col relative overflow-hidden shadow-[0_0_50px_rgba(255,158,207,0.3)]">
+
+        <!-- NJZ Header Status Bar -->
+        <header class="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-6 pt-5 pb-3 bg-gradient-to-b from-[#FBF9FF] via-[#FBF9FF]/90 to-transparent">
+            <div class="flex items-center space-x-2">
+                <div class="w-9 h-9 rounded-2xl bg-njzBlue flex items-center justify-center text-white shadow-md bunny-float">
+                    <i class="fa-solid fa-rabbit text-sm"></i>
+                </div>
+                <div>
+                    <span class="font-fredoka font-bold text-base tracking-wide bg-gradient-to-r from-njzBlue via-purple-500 to-njzPink bg-clip-text text-transparent">NJZ Phoning</span>
+                    <div class="flex items-center space-x-1">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        <span class="text-[10px] font-semibold text-neutral-400">Minji, Hanni & Friends</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Tabs -->
+            <div class="flex bg-purple-100/80 backdrop-blur-md p-1 rounded-full border border-purple-200">
+                <button onclick="switchTab('feed')" id="tab-btn-feed" class="px-3 py-1 rounded-full text-xs font-bold transition-all text-neutral-500 font-fredoka">
+                    <i class="fa-solid fa-comments mr-1"></i> Chat
+                </button>
+                <button onclick="switchTab('camera')" id="tab-btn-camera" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-njzBlue text-white shadow-sm font-fredoka">
+                    <i class="fa-solid fa-camera mr-1"></i> Snap
+                </button>
+                <button onclick="switchTab('album')" id="tab-btn-album" class="px-3 py-1 rounded-full text-xs font-bold transition-all text-neutral-500 font-fredoka">
+                    <i class="fa-solid fa-heart mr-1"></i> Album
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Views Container -->
+        <main class="flex-1 relative w-full h-full overflow-hidden pt-20 pb-20">
+
+            <!-- VIEW 1: PHONING CHAT & FEED -->
+            <section id="view-feed" class="absolute inset-0 flex flex-col pt-4 px-4 overflow-y-auto no-scrollbar hidden opacity-0 transition-opacity duration-300 bg-[#FFFDF9]">
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <div class="bg-purple-100 border border-purple-200 rounded-2xl px-4 py-2 flex items-center space-x-2 w-full shadow-sm">
+                        <span class="text-xl">🐰</span>
+                        <div class="flex-1">
+                            <h2 class="font-fredoka font-bold text-sm text-purple-900">Bunny Message Stream</h2>
+                            <p class="text-[10px] text-purple-600">Daily photo drops from your NJZ besties!</p>
+                        </div>
+                        <button onclick="simulateNewIncomingMoment()" class="bg-njzPink hover:bg-pink-400 text-white font-fredoka text-xs px-3 py-1.5 rounded-xl shadow-sm transition active:scale-95">
+                            <i class="fa-solid fa-sparkles mr-1"></i> Drop
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Message Feed -->
+                <div id="phoning-chat-stream" class="space-y-4 pb-8">
+                    <!-- Dynamic chat & photo cards -->
+                </div>
+            </section>
+
+            <!-- VIEW 2: CAMERA & STICKER BOOTH -->
+            <section id="view-camera" class="absolute inset-0 flex flex-col justify-between bg-neutral-900">
+                <div class="relative flex-1 w-full h-full overflow-hidden flex items-center justify-center bg-black">
+                    <!-- Video Stream / Canvas -->
+                    <video id="camera-stream" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]"></video>
+                    <canvas id="snapshot-canvas" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+
+                    <!-- Active Cute Frame Overlay -->
+                    <div id="active-frame-overlay" class="absolute inset-4 pointer-events-none border-[6px] border-njzPink/80 rounded-3xl flex flex-col justify-between p-4 transition-all shadow-[inset_0_0_20px_rgba(255,158,207,0.5)]">
+                        <div class="flex justify-between items-center bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-pink-200">
+                            <span class="font-fredoka text-xs text-pink-600 font-bold">✨ NJZCam v1.0</span>
+                            <span id="overlay-time" class="text-[10px] font-bold text-neutral-600">04:20 PM</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span id="active-sticker-badge" class="bg-njzYellow text-black font-fredoka text-[11px] px-3 py-1 rounded-full shadow-md">🌸 Bunny Power</span>
+                            <span class="text-xl">🐰</span>
+                        </div>
+                    </div>
+
+                    <!-- Camera Action Buttons Right -->
+                    <div class="absolute top-16 right-6 flex flex-col space-y-3 z-20">
+                        <button onclick="switchCamera()" class="w-11 h-11 rounded-2xl bg-white/80 backdrop-blur-md border border-purple-200 flex items-center justify-center text-purple-700 shadow-md active:scale-95 transition">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                        <button onclick="cycleFrame()" class="w-11 h-11 rounded-2xl bg-white/80 backdrop-blur-md border border-purple-200 flex items-center justify-center text-pink-600 shadow-md active:scale-95 transition" title="Change Frame">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+
+                    <!-- Camera Error Fallback -->
+                    <div id="camera-error" class="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900 text-center p-6 hidden">
+                        <div class="w-16 h-16 rounded-full bg-purple-900/50 flex items-center justify-center text-pink-300 mb-4 text-2xl">
+                            <i class="fa-solid fa-camera-rotate"></i>
+                        </div>
+                        <h3 class="font-fredoka font-semibold text-lg text-white mb-1">Camera Perms Needed</h3>
+                        <p class="text-xs text-neutral-400 max-w-xs mb-4">Tap below to retry webcam or use cute preset stickers.</p>
+                        <button onclick="initCamera()" class="bg-njzPink text-white font-fredoka text-xs px-5 py-2.5 rounded-2xl shadow-md">Allow Camera</button>
+                    </div>
+                </div>
+
+                <!-- Bottom Shutter & Sticker Selector Bar -->
+                <div class="absolute bottom-0 left-0 right-0 pb-8 pt-4 px-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col items-center z-20">
+                    <!-- Sticker Quick Bar -->
+                    <div class="flex space-x-2 mb-4 overflow-x-auto w-full no-scrollbar justify-center">
+                        <button onclick="selectSticker('🌸 Bunny Power')" class="px-3 py-1 rounded-full bg-white/20 text-white font-fredoka text-xs hover:bg-white/40 transition">🌸 Bunny</button>
+                        <button onclick="selectSticker('⭐ Super Shy')" class="px-3 py-1 rounded-full bg-white/20 text-white font-fredoka text-xs hover:bg-white/40 transition">⭐ Super Shy</button>
+                        <button onclick="selectSticker('🎀 Ditto Vibe')" class="px-3 py-1 rounded-full bg-white/20 text-white font-fredoka text-xs hover:bg-white/40 transition">🎀 Ditto</button>
+                        <button onclick="selectSticker('🍪 Cookie Jam')" class="px-3 py-1 rounded-full bg-white/20 text-white font-fredoka text-xs hover:bg-white/40 transition">🍪 Cookie</button>
+                    </div>
+
+                    <!-- Shutter Button -->
+                    <div class="relative flex items-center justify-center">
+                        <div class="absolute w-24 h-24 rounded-full border-2 border-dashed border-njzPink animate-spin" style="animation-duration: 10s;"></div>
+                        <button onclick="capturePhoto()" class="w-20 h-20 rounded-full bg-white border-4 border-njzPink active:scale-90 transition transform shadow-2xl flex items-center justify-center group">
+                            <div class="w-16 h-16 rounded-full bg-njzPink/20 group-hover:bg-njzPink/40 transition flex items-center justify-center text-pink-600 font-bold text-xl">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 3: ALBUM & FRIENDS -->
+            <section id="view-album" class="absolute inset-0 flex flex-col pt-4 px-6 overflow-y-auto no-scrollbar hidden opacity-0 transition-opacity duration-300 bg-[#FFFDF9]">
+                <div class="mb-4">
+                    <h1 class="font-fredoka font-bold text-xl text-neutral-800">🐰 Bunny Scrapbook</h1>
+                    <p class="text-xs text-neutral-400">All your captured memories and shared widgets</p>
+                </div>
+
+                <!-- Profile Banner -->
+                <div class="bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 rounded-3xl p-4 mb-6 shadow-sm flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-2xl bg-njzPink flex items-center justify-center text-white text-2xl shadow-md">
+                        🐰
+                    </div>
+                    <div>
+                        <h2 class="font-fredoka font-bold text-base text-purple-900">Minji (You)</h2>
+                        <p class="text-xs text-purple-600 font-mono">@minji_njz • VIP Bunny</p>
+                    </div>
+                </div>
+
+                <!-- Album Grid -->
+                <div class="mb-3 flex items-center justify-between">
+                    <h3 class="font-fredoka font-semibold text-sm text-neutral-700">Photo Vault (<span id="album-count">3</span>)</h3>
+                    <span class="text-xs text-purple-500 font-bold">Synced</span>
+                </div>
+                <div id="album-grid" class="grid grid-cols-2 gap-3 pb-8">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+        </main>
+
+        <!-- CAPTURE PREVIEW & PHONING MESSAGE MODAL -->
+        <div id="caption-modal" class="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col justify-between p-6 hidden opacity-0 transition-opacity duration-300">
+            <div class="flex items-center justify-between pt-4">
+                <button onclick="closeCaptionModal()" class="w-10 h-10 rounded-2xl bg-white/20 text-white flex items-center justify-center text-sm active:scale-95">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <span class="font-fredoka font-bold text-xs tracking-wider uppercase text-pink-300">Phoning Preview 💌</span>
+                <div class="w-10"></div>
+            </div>
+
+            <!-- Preview Card -->
+            <div class="my-auto flex flex-col items-center">
+                <div class="relative w-72 h-[400px] rounded-3xl overflow-hidden border-4 border-njzPink shadow-2xl bg-white p-3 flex flex-col justify-between">
+                    <div class="absolute top-4 left-4 z-10 bg-njzYellow text-black font-fredoka text-[10px] px-2.5 py-1 rounded-full shadow">
+                        <span id="modal-sticker-tag">🌸 Bunny Power</span>
+                    </div>
+                    <div class="w-full h-[310px] rounded-2xl overflow-hidden bg-neutral-100">
+                        <img id="preview-image" src="" alt="Captured" class="w-full h-full object-cover">
+                    </div>
+                    <div class="pt-2">
+                        <input id="caption-input" type="text" placeholder="Write a cute message to the group..." maxlength="60" class="w-full bg-purple-50 border border-purple-200 text-center text-neutral-800 placeholder-neutral-400 font-fredoka text-xs rounded-xl py-2 px-3 focus:outline-none focus:border-njzPink">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Send Button -->
+            <div class="pb-4">
+                <button onclick="sendMoment()" class="w-full py-3.5 bg-njzPink hover:bg-pink-400 text-white font-fredoka font-extrabold rounded-2xl text-sm shadow-lg transition flex items-center justify-center space-x-2 active:scale-98">
+                    <span>Send to Phoning Feed 🚀</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast Notification Banner -->
+        <div id="toast" class="absolute top-20 inset-x-6 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+            <div class="bg-purple-900 border border-purple-700 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-full bg-njzPink text-white flex items-center justify-center text-sm font-bold">
+                    🐰
+                </div>
+                <div>
+                    <h4 id="toast-title" class="font-fredoka font-bold text-xs">Notification</h4>
+                    <p id="toast-desc" class="text-[11px] text-purple-200">Action completed successfully.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Phoning Navigation Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 z-40 h-16 bg-[#FBF9FF]/95 backdrop-blur-lg border-t border-purple-100 flex items-center justify-around px-6">
+            <button onclick="switchTab('feed')" class="nav-tab-item flex flex-col items-center justify-center text-neutral-400 hover:text-purple-600 transition" data-target="feed">
+                <i class="fa-solid fa-comments text-lg mb-0.5"></i>
+                <span class="text-[10px] font-fredoka font-bold">Chat</span>
+            </button>
+            <button onclick="switchTab('camera')" class="nav-tab-item flex flex-col items-center justify-center text-njzBlue transition" data-target="camera">
+                <div class="w-10 h-10 rounded-full bg-njzBlue/20 flex items-center justify-center mb-0.5">
+                    <i class="fa-solid fa-camera text-base"></i>
+                </div>
+                <span class="text-[10px] font-fredoka font-bold">Snap</span>
+            </button>
+            <button onclick="switchTab('album')" class="nav-tab-item flex flex-col items-center justify-center text-neutral-400 hover:text-purple-600 transition" data-target="album">
+                <i class="fa-solid fa-heart text-lg mb-0.5"></i>
+                <span class="text-[10px] font-fredoka font-bold">Album</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        let currentTab = 'camera';
+        let mediaStream = null;
+        let useFrontCamera = true;
+        let activeSticker = '🌸 Bunny Power';
+        let frameStyleIndex = 0;
+        let capturedDataUrl = null;
+
+        const frameStyles = [
+            { border: 'border-njzPink/80', badgeBg: 'bg-njzYellow', text: '🌸 Bunny Power' },
+            { border: 'border-njzBlue/80', badgeBg: 'bg-njzPink text-white', text: '⭐ Super Shy' },
+            { border: 'border-purple-400', badgeBg: 'bg-purple-200 text-purple-900', text: '🎀 Ditto Vibe' },
+            { border: 'border-yellow-400', badgeBg: 'bg-green-200 text-green-900', text: '🍪 Cookie Jam' }
+        ];
+
+        // Mock Moments / Phoning Chat Feed
+        let moments = [
+            {
+                id: 1,
+                author: 'Hanni (NJZ)',
+                avatar: '🐰',
+                photo: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=600&auto=format&fit=crop',
+                caption: 'Eating bingsu after practice! 🍧✨',
+                timestamp: '10m ago',
+                sticker: '⭐ Super Shy'
+            },
+            {
+                id: 2,
+                author: 'Minji (NJZ)',
+                avatar: '🐶',
+                photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop',
+                caption: 'Checking out the new bunny stickers 🎀',
+                timestamp: '1h ago',
+                sticker: '🌸 Bunny Power'
+            },
+            {
+                id: 3,
+                author: 'Danielle',
+                avatar: '🌻',
+                photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+                caption: 'Sunshine today! Hope bunnies are smiling ☀️',
+                timestamp: '3h ago',
+                sticker: '🍪 Cookie Jam'
+            }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderFeed();
+            renderAlbum();
+            initCamera();
+            updateTime();
+            setInterval(updateTime, 60000);
+        });
+
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('overlay-time').innerText = timeStr;
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            const views = {
+                feed: document.getElementById('view-feed'),
+                camera: document.getElementById('view-camera'),
+                album: document.getElementById('view-album')
+            };
+
+            Object.keys(views).forEach(key => {
+                const view = views[key];
+                if (key === tabName) {
+                    view.classList.remove('hidden');
+                    setTimeout(() => view.classList.remove('opacity-0'), 10);
+                } else {
+                    view.classList.add('opacity-0');
+                    setTimeout(() => view.classList.add('hidden'), 300);
+                }
+            });
+
+            // Update Tab Indicator Styling
+            ['feed', 'camera', 'album'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (btn) {
+                    if (t === tabName) {
+                        btn.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-njzBlue text-white shadow-sm font-fredoka";
+                    } else {
+                        btn.className = "px-3 py-1 rounded-full text-xs font-bold transition-all text-neutral-500 font-fredoka hover:text-purple-600";
+                    }
+                }
+            });
+
+            // Bottom Nav indicators
+            document.querySelectorAll('.nav-tab-item').forEach(item => {
+                const target = item.getAttribute('data-target');
+                if (target === tabName) {
+                    item.className = "nav-tab-item flex flex-col items-center justify-center text-njzBlue transition";
+                    const icon = item.querySelector('i').className;
+                    const span = item.querySelector('span').innerText;
+                    item.innerHTML = `<div class="w-10 h-10 rounded-full bg-njzBlue/20 flex items-center justify-center mb-0.5"><i class="${icon} text-base"></i></div><span class="text-[10px] font-fredoka font-bold">${span}</span>`;
+                } else {
+                    item.className = "nav-tab-item flex flex-col items-center justify-center text-neutral-400 hover:text-purple-600 transition";
+                    const icon = item.querySelector('i').className.replace(' text-base', '');
+                    const span = item.querySelector('span').innerText;
+                    item.innerHTML = `<i class="${icon} text-lg mb-0.5"></i><span class="text-[10px] font-fredoka font-bold">${span}</span>`;
+                }
+            });
+        }
+
+        async function initCamera() {
+            const videoEl = document.getElementById('camera-stream');
+            const errEl = document.getElementById('camera-error');
+            try {
+                if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: useFrontCamera ? 'user' : 'environment', width: { ideal: 1080 }, height: { ideal: 1920 } },
+                    audio: false
+                });
+                videoEl.srcObject = mediaStream;
+                videoEl.classList.remove('hidden');
+                errEl.classList.add('hidden');
+            } catch (e) {
+                console.warn("Camera fallback active:", e);
+                videoEl.classList.add('hidden');
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        function switchCamera() {
+            useFrontCamera = !useFrontCamera;
+            initCamera();
+            showToast("Camera Switched", useFrontCamera ? "Front bunny cam" : "Rear cam active");
+        }
+
+        function selectSticker(stickerName) {
+            activeSticker = stickerName;
+            document.getElementById('active-sticker-badge').innerText = stickerName;
+            showToast("Sticker Added", `Applied: ${stickerName}`);
+        }
+
+        function cycleFrame() {
+            frameStyleIndex = (frameStyleIndex + 1) % frameStyles.length;
+            const style = frameStyles[frameStyleIndex];
+            const overlay = document.getElementById('active-frame-overlay');
+            overlay.className = `absolute inset-4 pointer-events-none border-[6px] ${style.border} rounded-3xl flex flex-col justify-between p-4 transition-all shadow-[inset_0_0_20px_rgba(255,158,207,0.5)]`;
+            
+            const badge = document.getElementById('active-sticker-badge');
+            badge.className = `${style.badgeBg} font-fredoka text-[11px] px-3 py-1 rounded-full shadow-md`;
+            badge.innerText = style.text;
+            activeSticker = style.text;
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-stream');
+            const canvas = document.getElementById('snapshot-canvas');
+            const previewImg = document.getElementById('preview-image');
+            const modal = document.getElementById('caption-modal');
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA && !video.classList.contains('hidden')) {
+                canvas.width = video.videoWidth || 720;
+                canvas.height = video.videoHeight || 1280;
+                const ctx = canvas.getContext('2d');
+                if (useFrontCamera) {
+                    ctx.translate(canvas.width, 0);
+                    ctx.scale(-1, 1);
+                }
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                capturedDataUrl = canvas.toDataURL('image/png');
+            } else {
+                capturedDataUrl = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop';
+            }
+
+            previewImg.src = capturedDataUrl;
+            document.getElementById('modal-sticker-tag').innerText = activeSticker;
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            document.getElementById('caption-input').value = '';
+        }
+
+        function closeCaptionModal() {
+            const modal = document.getElementById('caption-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function sendMoment() {
+            const caption = document.getElementById('caption-input').value.trim() || 'Sent a cute moment! 💌';
+            const newM = {
+                id: Date.now(),
+                author: 'Minji (You)',
+                avatar: '🐰',
+                photo: capturedDataUrl,
+                caption: caption,
+                timestamp: 'Just now',
+                sticker: activeSticker
+            };
+
+            moments.unshift(newM);
+            renderFeed();
+            renderAlbum();
+            closeCaptionModal();
+            switchTab('feed');
+            showToast("Phoning Message Sent!", "Your photo was dropped in the group chat!");
+        }
+
+        function simulateNewIncomingMoment() {
+            const friends = [
+                { name: 'Hanni (NJZ)', avatar: '🐰' },
+                { name: 'Haerin (NJZ)', avatar: '🐱' },
+                { name: 'Hyein (NJZ)', avatar: '🦖' }
+            ];
+            const sender = friends[Math.floor(Math.random() * friends.length)];
+            const photos = [
+                'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?q=80&w=600&auto=format&fit=crop'
+            ];
+            const captions = ['Check this out! ✨', 'Miss you bunnies 💖', 'Working hard today 🎵', 'Yummy snack time 🍪'];
+
+            const incoming = {
+                id: Date.now(),
+                author: sender.name,
+                avatar: sender.avatar,
+                photo: photos[Math.floor(Math.random() * photos.length)],
+                caption: captions[Math.floor(Math.random() * captions.length)],
+                timestamp: 'Just now',
+                sticker: '✨ Super Shy'
+            };
+
+            moments.unshift(incoming);
+            renderFeed();
+            renderAlbum();
+            showToast(`New Phoning Drop!`, `${sender.name} sent a photo widget.`);
+        }
+
+        function renderFeed() {
+            const container = document.getElementById('phoning-chat-stream');
+            container.innerHTML = moments.map(m => `
+                <div class="bg-white border-2 border-purple-100 rounded-3xl p-4 shadow-[0_4px_20px_rgba(216,180,254,0.15)]">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-9 h-9 rounded-2xl bg-purple-100 flex items-center justify-center text-lg shadow-sm">
+                                ${m.avatar}
+                            </div>
+                            <div>
+                                <h4 class="font-fredoka font-bold text-xs text-purple-900">${m.author}</h4>
+                                <span class="text-[10px] text-neutral-400">${m.timestamp}</span>
+                            </div>
+                        </div>
+                        <span class="bg-purple-50 text-purple-600 font-fredoka text-[10px] px-2.5 py-1 rounded-full border border-purple-100">${m.sticker}</span>
+                    </div>
+
+                    <!-- Photo Message Card -->
+                    <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-purple-50 border border-purple-100 shadow-inner">
+                        <img src="${m.photo}" alt="Moment" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
+                            <p class="text-xs font-fredoka font-medium text-white text-center drop-shadow">${m.caption}</p>
+                        </div>
+                    </div>
+
+                    <!-- Reactions -->
+                    <div class="flex items-center justify-between mt-3 px-1">
+                        <div class="flex space-x-2">
+                            <button onclick="reactMoment(${m.id}, '💖')" class="bg-purple-50 hover:bg-purple-100 border border-purple-100 px-3 py-1 rounded-full text-xs text-purple-700 font-fredoka active:scale-95 transition">💖 Love</button>
+                            <button onclick="reactMoment(${m.id}, '🐰')" class="bg-purple-50 hover:bg-purple-100 border border-purple-100 px-3 py-1 rounded-full text-xs text-purple-700 font-fredoka active:scale-95 transition">🐰 Bunny</button>
+                        </div>
+                        <span class="text-[10px] text-neutral-400 font-medium">Widget Active</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAlbum() {
+            const container = document.getElementById('album-grid');
+            document.getElementById('album-count').innerText = moments.length;
+            container.innerHTML = moments.map(m => `
+                <div class="relative aspect-square rounded-2xl overflow-hidden border-2 border-purple-100 shadow-sm bg-white group">
+                    <img src="${m.photo}" alt="Album item" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+                        <p class="text-[10px] font-fredoka text-white truncate">${m.caption}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function reactMoment(id, emoji) {
+            showToast("Reaction Sent!", `You sent ${emoji} to the chat.`);
+        }
+
+        function showToast(title, desc) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-desc').innerText = desc;
+            toast.classList.remove('-translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('-translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
